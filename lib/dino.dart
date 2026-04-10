@@ -68,6 +68,12 @@ class Dino extends SpriteAnimationGroupComponent with HasGameReference<Game> {
       isOnGround = true;
     }
 
+    if (isOnGround) {
+      animationTicker?.paused = false;
+    } else {
+      animationTicker?.paused = true;
+    }
+
     super.update(dt);
   }
 
