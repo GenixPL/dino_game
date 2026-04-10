@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:dino_game/dino.dart';
+import 'package:dino_game/floor.dart';
 import 'package:dino_game/iterable_extensions.dart';
+import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,7 @@ class Game extends FlameGame with KeyboardEvents, TapCallbacks {
   @override
   FutureOr<void> onLoad() async {
     add(_dino);
+    add(Floor());
 
     return super.onLoad();
   }

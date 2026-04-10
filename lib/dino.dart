@@ -52,21 +52,7 @@ class Dino extends SpriteAnimationGroupComponent with HasGameReference<Game> {
   void update(double dt) {
     current = _state;
 
-    // 1. Apply Gravity if in the air
-    if (!isOnGround) {
-      velocityY += gravity * dt;
-    } else {
-      velocityY = 0;
-    }
-
-    // 2. Update Position
-    position.y += velocityY * dt;
-
-    // 3. Simple Ground Check (replace with real collision logic)
-    if (position.y >= game.size.y - size.y) {
-      position.y = game.size.y - size.y;
-      isOnGround = true;
-    }
+    _updateJump(dt);
 
     if (isOnGround) {
       animationTicker?.paused = false;
@@ -81,6 +67,24 @@ class Dino extends SpriteAnimationGroupComponent with HasGameReference<Game> {
     if (isOnGround) {
       velocityY = jumpForce;
       isOnGround = false;
+    }
+  }
+
+  void _updateJump(double dt) {
+    // 1. Apply Gravity if in the air
+    if (!isOnGround) {
+      velocityY += gravity * dt;
+    } else {
+      velocityY = 0;
+    }
+
+    // 2. Update Position
+    position.y += velocityY * dt;
+
+    // 3. Simple Ground Check (replace with real collision logic)
+    if (position.y >= game.size.y - size.y) {
+      position.y = game.size.y - size.y;
+      isOnGround = true;
     }
   }
 }
