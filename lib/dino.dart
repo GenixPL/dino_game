@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:dino_game/game.dart';
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart';
 
 enum DinoState {
   idle,
@@ -11,39 +9,72 @@ enum DinoState {
 }
 
 class Dino extends SpriteAnimationGroupComponent with HasGameReference<Game> {
-  Dino() : super();
+  Dino()
+    : super(
+        size: Vector2(44, 48),
+      );
 
-  late final SpriteAnimation _runningAnim = _loadAnim(
-    filename: 'dino_run.png',
-    amount: 2,
-    stepTime: 0.1,
-    textureSize: Vector2(44, 48),
-  );
+  double velocityY = 0;
+  final double gravity = 800;      // Pixels per second squared
+  final double jumpForce = -400;   // Initial upward "kick"
+  bool isOnGround = false;
+
+  DinoState _state = DinoState.running;
 
   @override
   FutureOr<void> onLoad() {
     animations = {
-      DinoState.running: _runningAnim,
+      DinoState.idle: SpriteAnimation.fromFrameData(
+        game.images.fromCache('dino_idle.png'),
+        SpriteAnimationData.variable(
+          amount: 6,
+          textureSize: size,
+          // 1 slower blink, and 2 faster ones
+          stepTimes: [0.8, 0.2, 0.6, 0.2, 0.1, 0.2],
+        ),
+      ),
+      DinoState.running: SpriteAnimation.fromFrameData(
+        game.images.fromCache('dino_run.png'),
+        SpriteAnimationData.sequenced(
+          amount: 2,
+          stepTime: 0.1,
+          textureSize: size,
+        ),
+      ),
     };
 
-    current = DinoState.running;
+    position = Vector2(0, game.size.y - size.y);
 
     return super.onLoad();
   }
 
-  SpriteAnimation _loadAnim({
-    required String filename,
-    required int amount,
-    required double stepTime,
-    required Vector2 textureSize,
-  }) {
-    return SpriteAnimation.fromFrameData(
-      game.images.fromCache(filename),
-      SpriteAnimationData.sequenced(
-        amount: amount,
-        stepTime: stepTime,
-        textureSize: textureSize,
-      ),
-    );
+  @override
+  void update(double dt) {
+    current = _state;
+
+    // 1. Apply Gravity if in the air
+    if (!isOnGround) {
+      velocityY += gravity * dt;
+    } else {
+      velocityY = 0;
+    }
+
+    // 2. Update Position
+    position.y += velocityY * dt;
+
+    // 3. Simple Ground Check (replace with real collision logic)
+    if (position.y >= game.size.y - size.y) {
+      position.y = game.size.y - size.y;
+      isOnGround = true;
+    }
+
+    super.update(dt);
+  }
+
+  void jump() {
+    if (isOnGround) {
+      velocityY = jumpForce;
+      isOnGround = false;
+    }
   }
 }
