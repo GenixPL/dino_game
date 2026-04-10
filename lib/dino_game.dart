@@ -1,15 +1,45 @@
-import 'package:flame/game.dart';
+import 'package:dino_game/game.dart';
+import 'package:flame/camera.dart';
+import 'package:flame/game.dart' show GameWidget;
 import 'package:flutter/material.dart';
 
-class DinoGame extends StatelessWidget {
+class DinoGame extends StatefulWidget {
   const DinoGame({super.key});
 
   @override
+  State<DinoGame> createState() => _DinoGameState();
+}
+
+class _DinoGameState extends State<DinoGame> {
+  late final Game _game = Game();
+
+  bool _loaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _game.loadImages().then((_) {
+      _loaded = true;
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _game.clearCache();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (!_loaded) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return GameWidget(
-      game: _Game(),
+      game: _game,
     );
   }
 }
-
-class _Game extends FlameGame {}
