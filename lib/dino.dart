@@ -14,17 +14,29 @@ enum DinoState {
 class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGameReference<Game> {
   Dino()
     : super(
-        size: Vector2(44, 48),
+        size: Vector2(44, 47),
       );
 
   double velocityY = 0;
-  final double gravity = 800; // Pixels per second squared
-  final double jumpForce = -450; // Initial upward "kick"
+  final double gravity = 1000; // Pixels per second squared
+  final double jumpForce = -460; // Initial upward "kick"
   bool isOnGround = false;
 
   @override
   FutureOr<void> onLoad() {
-    add(RectangleHitbox());
+    // debugMode = true;
+
+    add(
+      PolygonHitbox([
+        Vector2(0, 0),
+        Vector2(size.x, 0),
+        Vector2(size.x, 15),
+        Vector2(28, size.y),
+        Vector2(10, size.y),
+        Vector2(0, size.y - 17),
+        Vector2(0, size.y),
+      ]),
+    );
 
     animations = Map.fromEntries(
       DinoState.values.map((DinoState state) {
@@ -63,7 +75,10 @@ class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGam
       }),
     );
 
-    position = Vector2(0, game.size.y - size.y);
+    position = Vector2(
+      4,
+      game.size.y - size.y,
+    );
 
     return super.onLoad();
   }

@@ -50,6 +50,8 @@ class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCall
       _dino.jump();
     }
 
+    // TODO(genix): when adding bending, dino and ptero's hitboxes need to change.
+
     return super.onKeyEvent(event, keysPressed);
   }
 
