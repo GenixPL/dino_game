@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:dino_game/dino.dart';
 import 'package:dino_game/floor.dart';
@@ -10,12 +11,25 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+enum _GameState {
+  initial,
+  running,
+  lost,
+}
+
+
+// TODO(genix): add sounds
+// TODO(genix): add more background
+// TODO(genix): add highest score
+// TODO(genix): add controls
+// TODO(genix): fix objects speeding up
 class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCallbacks {
   final Dino _dino = Dino();
   final Score _score = Score();
   final ObstacleGenerator _obstacleGenerator = ObstacleGenerator();
 
-  Timer? _collisionSpawnTimer;
+  _GameState _state = _GameState.initial;
+  Timer? _obstacleTimer;
 
   // region Overrides
 
@@ -47,7 +61,16 @@ class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCall
       LogicalKeyboardKey.space,
     });
     if (jumpKeyPressed) {
-      _dino.jump();
+      switch (_state) {
+        case _GameState.initial:
+        case _GameState.lost:
+          _start();
+          break;
+
+        case _GameState.running:
+          _dino.jump();
+          break;
+      }
     }
 
     // TODO(genix): when adding bending, dino and ptero's hitboxes need to change.
@@ -57,7 +80,17 @@ class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCall
 
   @override
   void onTapDown(TapDownEvent event) {
-    _dino.jump();
+    switch (_state) {
+      case _GameState.initial:
+      case _GameState.lost:
+        _start();
+        break;
+
+      case _GameState.running:
+        _dino.jump();
+        break;
+    }
+
     super.onTapDown(event);
   }
 
@@ -76,7 +109,19 @@ class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCall
 
   // endregion
 
+  void _start() {
+    _score.reset();
+    removeWhere((c) => c is Obstacle);
+    paused = false;
+    _state = _GameState.running;
+    _dino.run();
+    _obstacleGenerator.reset();
+    _startCollisionTimer();
+  }
+
   void gameLost() {
+    _obstacleTimer?.cancel();
+    _state = _GameState.lost;
     _dino.markDead();
     paused = true;
   }
@@ -86,10 +131,15 @@ class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCall
   }
 
   void _startCollisionTimer() {
-    _collisionSpawnTimer?.cancel();
-    _collisionSpawnTimer = Timer(Duration(seconds: 2), () {
-      add(_obstacleGenerator.generate());
-      _startCollisionTimer();
-    });
+    _obstacleTimer?.cancel();
+    _obstacleTimer = Timer(
+      Duration(
+        milliseconds: 1000 + Random().nextInt(1000),
+      ),
+      () {
+        add(_obstacleGenerator.generate());
+        _startCollisionTimer();
+      },
+    );
   }
 }

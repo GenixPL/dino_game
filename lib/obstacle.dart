@@ -90,6 +90,11 @@ class ObstacleGenerator {
   int? _lastIndex;
   int _counter = 0;
 
+  void reset() {
+    _lastIndex = null;
+    _counter = 0;
+  }
+
   Obstacle generate() {
     int newIndex = _getCase().index;
     if (newIndex == _lastIndex) {

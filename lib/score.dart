@@ -31,6 +31,11 @@ class Score extends TextComponent with HasGameReference {
     return super.onLoad();
   }
 
+  void reset() {
+    _score = 0;
+    text = _score.toString();
+  }
+
   void increase() {
     _score++;
     text = _score.toString();

@@ -5,7 +5,7 @@ import 'package:dino_game/obstacle.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
-enum DinoState {
+enum _DinoState {
   idle,
   running,
   dead,
@@ -39,11 +39,11 @@ class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGam
     );
 
     animations = Map.fromEntries(
-      DinoState.values.map((DinoState state) {
+      _DinoState.values.map((_DinoState state) {
         return MapEntry(
           state,
           switch (state) {
-            DinoState.idle => SpriteAnimation.fromFrameData(
+            _DinoState.idle => SpriteAnimation.fromFrameData(
               game.images.fromCache('dino_idle.png'),
               SpriteAnimationData.variable(
                 amount: 6,
@@ -53,7 +53,7 @@ class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGam
               ),
             ),
 
-            DinoState.running => SpriteAnimation.fromFrameData(
+            _DinoState.running => SpriteAnimation.fromFrameData(
               game.images.fromCache('dino_run.png'),
               SpriteAnimationData.sequenced(
                 amount: 2,
@@ -62,7 +62,7 @@ class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGam
               ),
             ),
 
-            DinoState.dead => SpriteAnimation.fromFrameData(
+            _DinoState.dead => SpriteAnimation.fromFrameData(
               game.images.fromCache('dino_dead.png'),
               SpriteAnimationData.sequenced(
                 amount: 1,
@@ -75,6 +75,8 @@ class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGam
       }),
     );
 
+    current = _DinoState.idle;
+
     position = Vector2(
       4,
       game.size.y - size.y - 1,
@@ -85,8 +87,6 @@ class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGam
 
   @override
   void update(double dt) {
-    current = DinoState.running;
-
     _updateJump(dt);
 
     if (isOnGround) {
@@ -114,8 +114,12 @@ class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGam
     }
   }
 
+  void run() {
+    current = _DinoState.running;
+  }
+
   void markDead() {
-    current = DinoState.dead;
+    current = _DinoState.dead;
   }
 
   void _updateJump(double dt) {
