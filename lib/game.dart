@@ -23,6 +23,7 @@ enum _GameState {
 // TODO(genix): add highest score
 // TODO(genix): add controls
 // TODO(genix): fix objects speeding up
+// TODO(genix): stop the timer when out of focus
 class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCallbacks {
   final Dino _dino = Dino();
   final Score _score = Score();
