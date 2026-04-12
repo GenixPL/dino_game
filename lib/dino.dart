@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:dino_game/collision_object.dart';
 import 'package:dino_game/game.dart';
+import 'package:dino_game/obstacle.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
@@ -19,7 +19,7 @@ class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGam
 
   double velocityY = 0;
   final double gravity = 800; // Pixels per second squared
-  final double jumpForce = -400; // Initial upward "kick"
+  final double jumpForce = -450; // Initial upward "kick"
   bool isOnGround = false;
 
   @override
@@ -87,7 +87,7 @@ class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGam
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
 
-    if (other is CollisionObject) {
+    if (other is Obstacle) {
       game.gameLost();
     }
   }

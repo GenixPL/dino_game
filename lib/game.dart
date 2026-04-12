@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:dino_game/dino.dart';
 import 'package:dino_game/floor.dart';
 import 'package:dino_game/iterable_extensions.dart';
+import 'package:dino_game/obstacle.dart';
 import 'package:dino_game/score.dart';
-import 'package:dino_game/square.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCallbacks {
   final Dino _dino = Dino();
   final Score _score = Score();
+  final ObstacleGenerator _obstacleGenerator = ObstacleGenerator();
 
   Timer? _collisionSpawnTimer;
 
@@ -27,6 +28,15 @@ class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCall
     _startCollisionTimer();
 
     return super.onLoad();
+  }
+
+  @override
+  void render(Canvas canvas) {
+    // Define the clipping area
+    canvas.clipRect(size.toRect());
+
+    // Everything drawn after this line will be clipped to the component's size
+    super.render(canvas);
   }
 
   @override
@@ -76,7 +86,7 @@ class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCall
   void _startCollisionTimer() {
     _collisionSpawnTimer?.cancel();
     _collisionSpawnTimer = Timer(Duration(seconds: 2), () {
-      add(Square());
+      add(_obstacleGenerator.generate());
       _startCollisionTimer();
     });
   }

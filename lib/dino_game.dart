@@ -1,5 +1,4 @@
 import 'package:dino_game/game.dart';
-import 'package:flame/camera.dart';
 import 'package:flame/game.dart' show GameWidget;
 import 'package:flutter/material.dart';
 
