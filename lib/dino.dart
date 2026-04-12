@@ -77,7 +77,7 @@ class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGam
 
     position = Vector2(
       4,
-      game.size.y - size.y,
+      game.size.y - size.y - 1,
     );
 
     return super.onLoad();
@@ -130,8 +130,8 @@ class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGam
     position.y += velocityY * dt;
 
     // 3. Simple Ground Check (replace with real collision logic)
-    if (position.y >= game.size.y - size.y) {
-      position.y = game.size.y - size.y;
+    if (position.y >= game.size.y - size.y - 1) {
+      position.y = game.size.y - size.y - 1;
       isOnGround = true;
     }
   }
