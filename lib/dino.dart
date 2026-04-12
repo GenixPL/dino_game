@@ -1,47 +1,67 @@
 import 'dart:async';
 
+import 'package:dino_game/collision_object.dart';
 import 'package:dino_game/game.dart';
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
 enum DinoState {
   idle,
   running,
+  dead,
 }
 
-class Dino extends SpriteAnimationGroupComponent with HasGameReference<Game> {
+class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGameReference<Game> {
   Dino()
     : super(
         size: Vector2(44, 48),
       );
 
   double velocityY = 0;
-  final double gravity = 800;      // Pixels per second squared
-  final double jumpForce = -400;   // Initial upward "kick"
+  final double gravity = 800; // Pixels per second squared
+  final double jumpForce = -400; // Initial upward "kick"
   bool isOnGround = false;
-
-  DinoState _state = DinoState.running;
 
   @override
   FutureOr<void> onLoad() {
-    animations = {
-      DinoState.idle: SpriteAnimation.fromFrameData(
-        game.images.fromCache('dino_idle.png'),
-        SpriteAnimationData.variable(
-          amount: 6,
-          textureSize: size,
-          // 1 slower blink, and 2 faster ones
-          stepTimes: [0.8, 0.2, 0.6, 0.2, 0.1, 0.2],
-        ),
-      ),
-      DinoState.running: SpriteAnimation.fromFrameData(
-        game.images.fromCache('dino_run.png'),
-        SpriteAnimationData.sequenced(
-          amount: 2,
-          stepTime: 0.1,
-          textureSize: size,
-        ),
-      ),
-    };
+    add(RectangleHitbox());
+
+    animations = Map.fromEntries(
+      DinoState.values.map((DinoState state) {
+        return MapEntry(
+          state,
+          switch (state) {
+            DinoState.idle => SpriteAnimation.fromFrameData(
+              game.images.fromCache('dino_idle.png'),
+              SpriteAnimationData.variable(
+                amount: 6,
+                textureSize: size,
+                // 1 slower blink, and 2 faster ones
+                stepTimes: [0.8, 0.2, 0.6, 0.2, 0.1, 0.2],
+              ),
+            ),
+
+            DinoState.running => SpriteAnimation.fromFrameData(
+              game.images.fromCache('dino_run.png'),
+              SpriteAnimationData.sequenced(
+                amount: 2,
+                stepTime: 0.1,
+                textureSize: size,
+              ),
+            ),
+
+            DinoState.dead => SpriteAnimation.fromFrameData(
+              game.images.fromCache('dino_dead.png'),
+              SpriteAnimationData.sequenced(
+                amount: 1,
+                stepTime: 1,
+                textureSize: size,
+              ),
+            ),
+          },
+        );
+      }),
+    );
 
     position = Vector2(0, game.size.y - size.y);
 
@@ -50,7 +70,7 @@ class Dino extends SpriteAnimationGroupComponent with HasGameReference<Game> {
 
   @override
   void update(double dt) {
-    current = _state;
+    current = DinoState.running;
 
     _updateJump(dt);
 
@@ -63,11 +83,24 @@ class Dino extends SpriteAnimationGroupComponent with HasGameReference<Game> {
     super.update(dt);
   }
 
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollision(intersectionPoints, other);
+
+    if (other is CollisionObject) {
+      game.gameLost();
+    }
+  }
+
   void jump() {
     if (isOnGround) {
       velocityY = jumpForce;
       isOnGround = false;
     }
+  }
+
+  void markDead() {
+    current = DinoState.dead;
   }
 
   void _updateJump(double dt) {
