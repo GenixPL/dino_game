@@ -90,6 +90,8 @@ class ObstacleGenerator {
   int? _lastIndex;
   int _counter = 0;
 
+  static double speed = 200;
+
   void reset() {
     _lastIndex = null;
     _counter = 0;
@@ -102,15 +104,22 @@ class ObstacleGenerator {
     }
     _lastIndex = newIndex;
 
+    switch (_counter) {
+      case < 5:
+        speed = 200;
+      case < 10:
+        speed = 300;
+      case < 15:
+        speed = 400;
+      case < 20:
+        speed = 500;
+
+      default:
+        speed = 600;
+    }
+
     final obstacle = Obstacle(
       obstacleCase: ObstacleCase.values[newIndex % ObstacleCase.values.length],
-      speed: switch (_counter) {
-        < 5 => 200,
-        < 10 => 300,
-        < 15 => 400,
-        < 20 => 500,
-        _ => 600,
-      },
     );
 
     _counter++;
@@ -164,13 +173,11 @@ class ObstacleGenerator {
 class Obstacle extends PositionComponent with HasGameReference<Game> {
   Obstacle({
     required this.obstacleCase,
-    required this.speed,
   }) : super(
          size: obstacleCase.size,
        );
 
   final ObstacleCase obstacleCase;
-  final double speed;
 
   @override
   FutureOr<void> onLoad() async {
@@ -199,7 +206,7 @@ class Obstacle extends PositionComponent with HasGameReference<Game> {
     super.update(dt);
 
     // 3. Move left: Subtract from the X-axis
-    position.x -= speed * dt;
+    position.x -= ObstacleGenerator.speed * dt;
 
     // 4. Optional: Remove the component if it goes off-screen to the left
     if (position.x + size.x < 0) {

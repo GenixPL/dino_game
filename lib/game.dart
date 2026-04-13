@@ -17,7 +17,6 @@ enum _GameState {
   lost,
 }
 
-
 // TODO(genix): add sounds
 // TODO(genix): add more background
 // TODO(genix): add highest score
@@ -27,6 +26,7 @@ enum _GameState {
 class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCallbacks {
   final Dino _dino = Dino();
   final Score _score = Score();
+  final Floor _floor = Floor();
   final ObstacleGenerator _obstacleGenerator = ObstacleGenerator();
 
   _GameState _state = _GameState.initial;
@@ -38,9 +38,7 @@ class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCall
   FutureOr<void> onLoad() async {
     add(_dino);
     add(_score);
-    add(Floor());
-
-    _startCollisionTimer();
+    add(_floor);
 
     return super.onLoad();
   }
@@ -115,6 +113,8 @@ class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCall
     removeWhere((c) => c is Obstacle);
     paused = false;
     _state = _GameState.running;
+    _floor.start();
+    _dino.jump();
     _dino.run();
     _obstacleGenerator.reset();
     _startCollisionTimer();
@@ -138,6 +138,15 @@ class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCall
         milliseconds: 1000 + Random().nextInt(1000),
       ),
       () {
+        final hasObstacle = children.any((c) => c is Obstacle);
+        if (hasObstacle) {
+          _obstacleTimer = Timer(
+            Duration(milliseconds: 100),
+            _startCollisionTimer,
+          );
+          return;
+        }
+
         add(_obstacleGenerator.generate());
         _startCollisionTimer();
       },

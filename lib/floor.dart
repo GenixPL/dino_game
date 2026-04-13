@@ -16,12 +16,19 @@ class Floor extends ParallaxComponent {
       ],
       alignment: Alignment.bottomCenter,
       fill: LayerFill.none,
-      baseVelocity: Vector2(40, 0),
       velocityMultiplierDelta: Vector2(1.8, 0),
       repeat: ImageRepeat.repeatX,
     );
 
     return super.onLoad();
+  }
+
+  void stop() {
+    parallax?.baseVelocity = Vector2(0, 0);
+  }
+
+  void start() {
+    parallax?.baseVelocity = Vector2(40, 0);
   }
 
   void updateSpeed(double newSpeed) {
