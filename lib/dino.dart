@@ -87,6 +87,11 @@ class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGam
 
   @override
   void update(double dt) {
+    if (current == _DinoState.dead) {
+      // This stops the falling if we die.
+      return;
+    }
+
     _updateJump(dt);
 
     if (isOnGround) {
