@@ -6,9 +6,11 @@ class DinoGame extends StatefulWidget {
   const DinoGame({
     super.key,
     this.scoreTextStyle,
+    this.jumpForceMultiplier,
   });
 
   final TextStyle? scoreTextStyle;
+  final double? jumpForceMultiplier;
 
   @override
   State<DinoGame> createState() => _DinoGameState();
@@ -28,12 +30,23 @@ class _DinoGameState extends State<DinoGame> {
       _loaded = true;
       setState(() {});
     });
+
+    _game.changeJumpForceMultiplier(widget.jumpForceMultiplier);
   }
 
   @override
   void dispose() {
     _game.clearCache();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant DinoGame oldWidget) {
+    if (oldWidget.jumpForceMultiplier != widget.jumpForceMultiplier) {
+      _game.changeJumpForceMultiplier(widget.jumpForceMultiplier);
+    }
+
+    super.didUpdateWidget(oldWidget);
   }
 
   @override

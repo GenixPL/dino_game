@@ -19,6 +19,7 @@ class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGam
 
   double velocityY = 0;
   final double gravity = 1000; // Pixels per second squared
+  double jumpForceMultiplier = 1.0;
   final double jumpForce = -460; // Initial upward "kick"
   bool isOnGround = false;
 
@@ -114,7 +115,7 @@ class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGam
 
   void jump() {
     if (isOnGround) {
-      velocityY = jumpForce;
+      velocityY = jumpForce * jumpForceMultiplier;
       isOnGround = false;
     }
   }
@@ -125,6 +126,10 @@ class Dino extends SpriteAnimationGroupComponent with CollisionCallbacks, HasGam
 
   void markDead() {
     current = _DinoState.dead;
+  }
+
+  void changeJumpForceMultiplier(double? value) {
+    jumpForceMultiplier = value ?? 1.0;
   }
 
   void _updateJump(double dt) {

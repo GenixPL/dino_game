@@ -34,6 +34,7 @@ class HomePage extends StatelessWidget {
                     maxHeight: 400,
                   ),
                   child: DinoGame(
+                    jumpForceMultiplier: 2.0,
                     // scoreTextStyle: TextStyle(
                     //   color: Colors.red,
                     // ),

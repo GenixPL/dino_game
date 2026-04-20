@@ -144,6 +144,10 @@ class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCall
     _score.increase();
   }
 
+  void changeJumpForceMultiplier(double? value) {
+    _dino.changeJumpForceMultiplier(value);
+  }
+
   void _startCollisionTimer() {
     _obstacleTimer?.cancel();
     _obstacleTimer = Timer(
