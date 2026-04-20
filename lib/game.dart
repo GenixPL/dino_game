@@ -8,6 +8,7 @@ import 'package:dino_game/obstacle.dart';
 import 'package:dino_game/score.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
+import 'package:flame/src/components/core/component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -21,11 +22,18 @@ enum _GameState {
 // TODO(genix): add more background
 // TODO(genix): add highest score
 // TODO(genix): add controls
-// TODO(genix): fix objects speeding up
 // TODO(genix): stop the timer when out of focus
 class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCallbacks {
+  Game({
+    required this.scoreTextStyle,
+  });
+
+  final TextStyle? scoreTextStyle;
+
   final Dino _dino = Dino();
-  final Score _score = Score();
+  late final Score _score = Score(
+    textStyle: scoreTextStyle,
+  );
   final Floor _floor = Floor();
   final ObstacleGenerator _obstacleGenerator = ObstacleGenerator();
 
@@ -124,7 +132,12 @@ class Game extends FlameGame with HasCollisionDetection, KeyboardEvents, TapCall
     _obstacleTimer?.cancel();
     _state = _GameState.lost;
     _dino.markDead();
-    paused = true;
+    _floor.stop();
+    for (Component child in children) {
+      if (child is Obstacle) {
+        child.stop();
+      }
+    }
   }
 
   void increaseScore() {

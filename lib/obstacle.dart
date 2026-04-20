@@ -178,6 +178,7 @@ class Obstacle extends PositionComponent with HasGameReference<Game> {
        );
 
   final ObstacleCase obstacleCase;
+  bool _stopped = false;
 
   @override
   FutureOr<void> onLoad() async {
@@ -205,6 +206,10 @@ class Obstacle extends PositionComponent with HasGameReference<Game> {
   void update(double dt) {
     super.update(dt);
 
+    if (_stopped) {
+      return;
+    }
+
     // 3. Move left: Subtract from the X-axis
     position.x -= ObstacleGenerator.speed * dt;
 
@@ -213,6 +218,10 @@ class Obstacle extends PositionComponent with HasGameReference<Game> {
       game.increaseScore();
       removeFromParent();
     }
+  }
+
+  void stop() {
+    _stopped = true;
   }
 
   double _getPositionY() {

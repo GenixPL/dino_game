@@ -5,16 +5,19 @@ import 'package:flame/text.dart';
 import 'package:flutter/material.dart';
 
 class Score extends TextComponent with HasGameReference {
-  Score()
-    : super(
-        anchor: Anchor.topRight,
-        textRenderer: TextPaint(
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: _fontSize,
-          ),
-        ),
-      );
+  Score({
+    TextStyle? textStyle,
+  }) : super(
+         anchor: Anchor.topRight,
+         textRenderer: TextPaint(
+           style:
+               textStyle ??
+               TextStyle(
+                 color: Colors.white,
+                 fontSize: _fontSize,
+               ),
+         ),
+       );
 
   static const double _fontSize = 24;
   int _score = 0;
@@ -22,13 +25,17 @@ class Score extends TextComponent with HasGameReference {
   @override
   FutureOr<void> onLoad() {
     text = _score.toString();
+    return super.onLoad();
+  }
 
+  @override
+  void onGameResize(Vector2 size) {
     position = Vector2(
       game.size.x - 4,
       0,
     );
 
-    return super.onLoad();
+    super.onGameResize(size);
   }
 
   void reset() {

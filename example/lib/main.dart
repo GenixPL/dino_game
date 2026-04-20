@@ -20,6 +20,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade900,
       body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -29,10 +30,14 @@ class HomePage extends StatelessWidget {
               child: Center(
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    maxWidth: 400,
+                    maxWidth: 640,
                     maxHeight: 400,
                   ),
-                  child: DinoGame(),
+                  child: DinoGame(
+                    // scoreTextStyle: TextStyle(
+                    //   color: Colors.red,
+                    // ),
+                  ),
                 ),
               ),
             ),

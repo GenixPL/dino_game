@@ -3,14 +3,21 @@ import 'package:flame/game.dart' show GameWidget;
 import 'package:flutter/material.dart';
 
 class DinoGame extends StatefulWidget {
-  const DinoGame({super.key});
+  const DinoGame({
+    super.key,
+    this.scoreTextStyle,
+  });
+
+  final TextStyle? scoreTextStyle;
 
   @override
   State<DinoGame> createState() => _DinoGameState();
 }
 
 class _DinoGameState extends State<DinoGame> {
-  late final Game _game = Game();
+  late final Game _game = Game(
+    scoreTextStyle: widget.scoreTextStyle,
+  );
 
   bool _loaded = false;
 
